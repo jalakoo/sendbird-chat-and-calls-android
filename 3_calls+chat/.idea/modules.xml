@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Sendbird_Calls.iml" filepath="$PROJECT_DIR$/.idea/modules/Sendbird_Calls.iml" group="Sendbird_Calls" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/app.iml" group="Sendbird Calls/app" />
+    </modules>
+  </component>
+</project>

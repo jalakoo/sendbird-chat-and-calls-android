@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
 
         SendBirdUIKit.init(object : SendBirdUIKitAdapter {
             override fun getAppId(): String {
-                return "6F8C8FA1-3BFE-4C8D-BC2D-992A35101DDA";
+                return "D56438AE-B4DB-4DC9-B440-E032D7B35CEB";
             }
 
             override fun getAccessToken(): String {
@@ -29,15 +29,15 @@ class MainActivity : AppCompatActivity() {
             override fun getUserInfo(): UserInfo {
                 return object : UserInfo {
                     override fun getUserId(): String {
-                        return "batman"
+                        return "jason"
                     }
 
                     override fun getNickname(): String {
-                        return "Batman"
+                        return "Jason"
                     }
 
                     override fun getProfileUrl(): String {
-                        return ""
+                        return "https://media-exp1.licdn.com/dms/image/C5603AQFFExCa2WI0WQ/profile-displayphoto-shrink_400_400/0?e=1611187200&v=beta&t=16CiMdFw1JeC5bj3237MlOyWrLi7cBI90i-Wrv7oB5s"
                     }
                 }
             }
