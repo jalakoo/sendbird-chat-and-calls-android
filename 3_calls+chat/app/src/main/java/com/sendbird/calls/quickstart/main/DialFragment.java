@@ -25,10 +25,9 @@ import com.sendbird.calls.quickstart.R;
 import com.sendbird.calls.quickstart.call.CallService;
 import com.sendbird.calls.quickstart.utils.PrefUtils;
 import com.sendbird.uikit.SendBirdUIKit;
-import com.sendbird.uikit.activities.ChannelActivity;
-import com.sendbird.uikit.log.Logger;
-import com.sendbird.uikit.widgets.WaitingDialog;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class DialFragment extends Fragment {
@@ -118,7 +117,7 @@ public class DialFragment extends Fragment {
             String calleeId = (mTextInputEditTextUserId.getText() != null ? mTextInputEditTextUserId.getText().toString() : "");
             Log.v("sendbird", "DialFragment: ImageViewChat: callee Id: " + calleeId);
             if (!TextUtils.isEmpty(calleeId)) {
-                getChannelURL((channelURL -> {
+                getChannelURL(calleeId, (channelURL -> {
                     Log.v("sendbird", "DialFragment: ImageViewChat: channelURL: " + channelURL);
                     displayChat(channelURL);
                 }));
@@ -144,7 +143,7 @@ public class DialFragment extends Fragment {
      * Use Sendbird Chat SDK to get the channel URL
      * @param callback
      */
-    void getChannelURL(channelCallback callback ){
+    void getChannelURL(String calleeId, channelCallback callback ){
         Log.v("sendbird", "DialFragment: getChannelUrl" );
         SendBirdUIKit.connect((user, e) -> {
             if (e != null) {
@@ -152,25 +151,49 @@ public class DialFragment extends Fragment {
                 return;
             }
 
-            GroupChannelListQuery channelListQuery = GroupChannel.createMyGroupChannelListQuery();
-            channelListQuery.setIncludeEmpty(true);
-            channelListQuery.setOrder(GroupChannelListQuery.Order.LATEST_LAST_MESSAGE); // CHRONOLOGICAL, LATEST_LAST_MESSAGE, CHANNEL_NAME_ALPHABETICAL, and METADATA_VALUE_ALPHABETICAL
-            channelListQuery.setLimit(1);
-
-            channelListQuery.next(new GroupChannelListQuery.GroupChannelListQueryResultHandler() {
-             @Override
-                public void onResult(List<GroupChannel> list, SendBirdException e) {
-                    if (e != null) {    // Error.
-                       Log.e("sendbird", "DialFragment: getChannelUrl: ERROR: " + e );
-                        return;
-                 }
-                    GroupChannel channel = list.get(0);
-                    Log.v("sendbird", "DialFragment: getChannelUrl: pre-existing channel: " + channel.toString() );
-
-                    //TODO: Create new channel otherwise
-                    callback.onComplete(channel.getUrl());
+            getExistingChannel(calleeId, user.getUserId(), (channelUrl)->{
+                if (channelUrl == null){
+                    // No pre-existing - let's create a new channel
+                    List<String> users = Arrays.asList(user.getUserId(), calleeId);
+                    GroupChannel.createChannelWithUserIds(users, true, new GroupChannel.GroupChannelCreateHandler() {
+                        @Override
+                        public void onResult(GroupChannel groupChannel, SendBirdException e) {
+                            if (e != null) {    // Error.
+                                Log.e("sendbird", "DialFragment: getChannelUrl: ERROR: " + e );
+                                return;
+                            }
+                            callback.onComplete(groupChannel.getUrl());
+                        }
+                    });
+                    return;
                 }
+                // Prior channel found - let's display that one
+                callback.onComplete(channelUrl);
             });
         });
     }
+
+    void getExistingChannel(String calleeId, String callerId, channelCallback callback){
+        Log.v("sendbird", "DialFragment: getExistingChannel: callee: " + calleeId + " caller: " + callerId );
+        GroupChannelListQuery filteredQuery = GroupChannel.createMyGroupChannelListQuery();
+        List<String> userIds = new ArrayList<>();
+        userIds.add(calleeId);
+        userIds.add(callerId);
+
+        filteredQuery.setUserIdsIncludeFilter(userIds, GroupChannelListQuery.QueryType.AND);
+        filteredQuery.next(new GroupChannelListQuery.GroupChannelListQueryResultHandler() {
+            @Override
+            public void onResult(List<GroupChannel> list, SendBirdException e) {
+                Log.v("sendbird", "DialFragment: getExistingChannel: list: " + list.toString() + " ERROR: " + e );
+
+                String result = null;
+                if (e == null && !list.isEmpty()){
+                    GroupChannel channel = list.get(0);
+                    result = channel.getUrl();
+                }
+                callback.onComplete(result);
+            }
+        });
+    }
+
 }

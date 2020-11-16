@@ -27,10 +27,7 @@ import com.sendbird.calls.quickstart.R;
 import com.sendbird.calls.quickstart.utils.BroadcastUtils;
 import com.sendbird.calls.quickstart.utils.ToastUtils;
 import com.sendbird.calls.quickstart.utils.UserInfoUtils;
-import com.sendbird.uikit.*;
 import com.sendbird.uikit.activities.ChannelActivity;
-import com.sendbird.uikit.log.Logger;
-import com.sendbird.uikit.widgets.WaitingDialog;
 
 import java.util.ArrayList;
 
