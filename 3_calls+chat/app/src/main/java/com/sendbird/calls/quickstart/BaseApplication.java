@@ -14,6 +14,9 @@ import com.sendbird.calls.handler.SendBirdCallListener;
 import com.sendbird.calls.quickstart.call.CallService;
 import com.sendbird.calls.quickstart.utils.BroadcastUtils;
 import com.sendbird.calls.quickstart.utils.PrefUtils;
+import com.sendbird.uikit.SendBirdUIKit;
+import com.sendbird.uikit.adapter.SendBirdUIKitAdapter;
+import com.sendbird.uikit.interfaces.UserInfo;
 
 import java.util.UUID;
 
@@ -32,6 +35,63 @@ public class BaseApplication extends MultiDexApplication { // multidex
         Log.i(BaseApplication.TAG, "[BaseApplication] onCreate()");
 
         initSendBirdCall(PrefUtils.getAppId(getApplicationContext()));
+        initSendBirdUIKit(PrefUtils.getUserId(getApplicationContext()),PrefUtils.getAppId(getApplicationContext()));
+    }
+
+    /**
+     * Properties needed for Sendbird UIKit
+     */
+    private String userId;
+    private String userNickname;
+    private String appId = "D56438AE-B4DB-4DC9-B440-E032D7B35CEB";
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public void setUserNickname(String userNickname) {
+        this.userNickname = userNickname;
+    }
+
+    /**
+     * Initialize Sendbird UIKit
+     * @param newAppId
+     * @return
+     */
+    public void initSendBirdUIKit(String newUserId, String newAppId){
+        this.userId = newUserId;
+        this.appId = newAppId;
+        SendBirdUIKit.init(new SendBirdUIKitAdapter() {
+            @Override
+            public String getAppId() {
+                return appId;
+            }
+
+            @Override
+            public String getAccessToken() {
+                return "null";
+            }
+
+            @Override
+            public UserInfo getUserInfo() {
+                return new UserInfo() {
+                    @Override
+                    public String getUserId() {
+                        return userId;
+                    }
+
+                    @Override
+                    public String getNickname() {
+                        return userNickname;
+                    }
+
+                    @Override
+                    public String getProfileUrl() {
+                        return "";
+                    }
+                };
+            }
+        }, this);
     }
 
     public boolean initSendBirdCall(String appId) {

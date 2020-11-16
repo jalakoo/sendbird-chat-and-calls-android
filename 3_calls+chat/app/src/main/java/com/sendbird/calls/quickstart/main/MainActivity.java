@@ -27,6 +27,10 @@ import com.sendbird.calls.quickstart.R;
 import com.sendbird.calls.quickstart.utils.BroadcastUtils;
 import com.sendbird.calls.quickstart.utils.ToastUtils;
 import com.sendbird.calls.quickstart.utils.UserInfoUtils;
+import com.sendbird.uikit.*;
+import com.sendbird.uikit.activities.ChannelActivity;
+import com.sendbird.uikit.log.Logger;
+import com.sendbird.uikit.widgets.WaitingDialog;
 
 import java.util.ArrayList;
 
@@ -215,5 +219,13 @@ public class MainActivity extends AppCompatActivity {
                 ToastUtils.showToast(mContext, "Permission denied.");
             }
         }
+    }
+
+    /**
+     * Display Chat Channel - Called from DialFragment
+     */
+    public void displayChat(String channelUrl){
+        Log.v("sendbird", "MainActivity: displayChat: channelURL:" + channelUrl);
+        startActivity(ChannelActivity.newIntent(this, channelUrl));
     }
 }
